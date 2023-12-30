@@ -5,6 +5,7 @@ import { AuthUserController } from "./controller/user/AuthUserController";
 import { DetailUserController } from "./controller/user/DetailUserController";
 
 import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { CreateCategoryController } from "./controller/categories/CreateCategoryController";
 
 const router = Router();
 
@@ -12,5 +13,8 @@ const router = Router();
 router.post("/users", new CreateUserController().handle);
 router.post("/session", new AuthUserController().handle);
 router.get("/me", isAuthenticated, new DetailUserController().handle);
+
+//* -- CATEGORIES ROUTES --
+router.post('/category', isAuthenticated, new CreateCategoryController().handle)
 
 export { router };
