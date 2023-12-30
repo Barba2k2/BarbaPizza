@@ -75,5 +75,3 @@ model Item {
   order_id String
   product_id String
 }
-
-
