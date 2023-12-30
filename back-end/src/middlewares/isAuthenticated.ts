@@ -16,13 +16,18 @@ export function isAuthenticated(
     return res.status(401).end();
   }
 
-  const [, token] = authToken.split(" ");
+  const [, token] = authToken.split(" ")
 
   try {
-    const { sub } = verify(token, process.env.JWT_SECRET) as Payload;
+    const { sub } = verify(
+      token,
+      process.env.JWT_SECRET
+    ) as Payload
 
-    return next();
+    req.user_id = sub;
+
+    return next()
   } catch (err) {
-    return res.status(401).end();
+    return res.status(401).end()
   }
 }
