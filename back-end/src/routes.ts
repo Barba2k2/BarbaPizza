@@ -11,10 +11,12 @@ import { ListCategoryController } from "./controller/categories/ListCategoryCont
 import { CreateProductController } from "./controller/product/CreateProductController";
 import { ListByCategoryController } from "./controller/product/ListByCategoryController";
 
+import { CreateOrderController } from "./controller/order/CreateOrderController";
+import { RemoveOrderController } from "./controller/order/RemoveOrderController";
+
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 import uploadConfig from '../src/config/multer'
-import { CreateOrderController } from "./controller/order/CreateOrderController";
 
 const router = Router();
 
@@ -38,6 +40,8 @@ router.post("/product", isAuthenticated, upload.single("file"), new CreateProduc
 router.get('/category/product', isAuthenticated, new ListByCategoryController().handle);
 
 //! -- ORDERS ROUTES --
-router.post('/order', isAuthenticated, new CreateOrderController().handle)
+router.post('/order', isAuthenticated, new CreateOrderController().handle);
+
+router.delete('/order', isAuthenticated, new RemoveOrderController().handle);
 
 export { router };
