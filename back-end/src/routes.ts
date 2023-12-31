@@ -16,14 +16,15 @@ import { RemoveOrderController } from "./controller/order/RemoveOrderController"
 
 import { AddItemController } from "./controller/order/AddItemController";
 import { RemoveItemController } from "./controller/order/RemoveItemController";
+import { SendOrderController } from "./controller/order/SendOrderController";
 
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 
-import uploadConfig from '../src/config/multer'
+import uploadConfig from "../src/config/multer";
 
 const router = Router();
 
-const upload = multer(uploadConfig.upload("./tmp"))
+const upload = multer(uploadConfig.upload("./tmp"));
 
 //! --USER ROUTES --
 router.post("/users", new CreateUserController().handle);
@@ -33,20 +34,39 @@ router.post("/session", new AuthUserController().handle);
 router.get("/me", isAuthenticated, new DetailUserController().handle);
 
 //* -- CATEGORIES ROUTES --
-router.post("/category", isAuthenticated, new CreateCategoryController().handle);
+router.post(
+  "/category",
+  isAuthenticated,
+  new CreateCategoryController().handle
+);
 
 router.get("/category", isAuthenticated, new ListCategoryController().handle);
 
 //! -- PRODUCTS ROUTES --
-router.post("/product", isAuthenticated, upload.single("file"), new CreateProductController().handle);
+router.post(
+  "/product",
+  isAuthenticated,
+  upload.single("file"),
+  new CreateProductController().handle
+);
 
-router.get('/category/product', isAuthenticated, new ListByCategoryController().handle);
+router.get(
+  "/category/product",
+  isAuthenticated,
+  new ListByCategoryController().handle
+);
 
 //! -- ORDERS ROUTES --
-router.post('/order', isAuthenticated, new CreateOrderController().handle);
-router.delete('/order', isAuthenticated, new RemoveOrderController().handle);
+router.post("/order", isAuthenticated, new CreateOrderController().handle);
+router.delete("/order", isAuthenticated, new RemoveOrderController().handle);
 
-router.post('/order/add', isAuthenticated, new AddItemController().handle);
-router.delete('/order/remove', isAuthenticated, new RemoveItemController().handle);
+router.post("/order/add", isAuthenticated, new AddItemController().handle);
+router.delete(
+  "/order/remove",
+  isAuthenticated,
+  new RemoveItemController().handle
+);
+
+router.put("/order/send", isAuthenticated, new SendOrderController().handle);
 
 export { router };
