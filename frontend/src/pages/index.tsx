@@ -4,6 +4,7 @@ import styles from "../../styles/Home.module.scss";
 
 import logoImg from "../../public/logo.svg";
 import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
 
 export default function Home() {
   return (
@@ -15,9 +16,13 @@ export default function Home() {
         <Image src={logoImg} alt="Logo Barba Pizzaria" />
         <div className={styles.login}>
           <form>
-            <Input placeholder="Digite seu e-mail" type="text"/>
+            <Input placeholder="Digite seu e-mail" type="text" />
 
-            <Input placeholder="Digite sua senha" type="password"/>
+            <Input placeholder="Digite sua senha" type="password" />
+
+            <Button type="submit" loading={false}>
+              Cadastrar
+            </Button>
           </form>
         </div>
       </div>
