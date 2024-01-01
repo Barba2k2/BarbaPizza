@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.23.7",
+    "@babel/eslint-parser": "^7.23.3",
     "@babel/preset-react": "^7.23.3",
     "next": "^14.0.4",
     "react": "^18.2.0",
@@ -20,6 +21,8 @@
   "devDependencies": {
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.46",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
     "eslint": "8.56.0",
     "eslint-config-next": "12.1.0"
   }
