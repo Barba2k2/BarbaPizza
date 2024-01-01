@@ -12,9 +12,12 @@
     "@babel/preset-react": "^7.23.3",
     "next": "^14.0.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.2.46",
     "eslint": "8.9.0",
     "eslint-config-next": "12.1.0"
   }
