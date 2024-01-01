@@ -21,9 +21,11 @@ export default function Home() {
             <Input placeholder="Digite sua senha" type="password" />
 
             <Button type="submit" loading={false}>
-              Cadastrar
+              Acessar
             </Button>
           </form>
+
+          <a className={styles.text}>Não possui uma conta? cadastre-se</a>
         </div>
       </div>
     </>
