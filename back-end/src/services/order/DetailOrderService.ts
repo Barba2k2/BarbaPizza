@@ -4,7 +4,7 @@ interface DetailRequest {
   order_id: string;
 }
 
-class DetailOrderService {
+class DetailOrderSerivce {
   async execute({ order_id }: DetailRequest) {
     const orders = await prismaClient.item.findMany({
       where: {
@@ -20,4 +20,4 @@ class DetailOrderService {
   }
 }
 
-export { DetailOrderService };
+export { DetailOrderSerivce };
