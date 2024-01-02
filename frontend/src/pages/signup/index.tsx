@@ -1,3 +1,4 @@
+import { FormEvent, useState, useContext } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../../../styles/Home.module.scss";
@@ -6,9 +7,41 @@ import logoImg from "../../../public/logo.svg";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 
+import { AuthContext } from "../../contexts/AuthContext";
+
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function Home() {
+  const { signUp } = useContext(AuthContext);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  async function handleSingUp(event: FormEvent) {
+    event.preventDefault();
+
+    if (name === "" || email === "" || password === "") {
+      toast.error("Por favor, preencha todos os campos");
+      return;
+    }
+
+    setLoading(true);
+
+    let data = {
+      name,
+      email,
+      password,
+    };
+
+    await signUp(data);
+
+    setLoading(false);
+  }
+
   return (
     <>
       <Head>
@@ -19,14 +52,30 @@ export default function Home() {
         <div className={styles.login}>
           <h1>Criando sua Conta</h1>
 
-          <form>
-            <Input placeholder="Digite seu Nome" type="text" />
+          <form onSubmit={handleSingUp}>
+            {/* Name */}
+            <Input
+              placeholder="Digite seu Nome"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            {/* Email */}
+            <Input
+              placeholder="Digite seu e-mail"
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {/* Password */}
+            <Input
+              placeholder="Digite sua senha"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-            <Input placeholder="Digite seu e-mail" type="text" />
-
-            <Input placeholder="Digite sua senha" type="password" />
-
-            <Button type="submit" loading={false}>
+            <Button type="submit" loading={loading}>
               Cadastrar
             </Button>
           </form>
