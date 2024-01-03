@@ -31,7 +31,6 @@ export function Header() {
           </button>
         </nav>
       </div>
-      <h1>HEADEEER</h1>
     </header>
   );
 }
