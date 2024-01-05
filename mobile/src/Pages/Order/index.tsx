@@ -3,18 +3,18 @@ import {
   View,
   Text,
   StyleSheet,
-  Touchable,
   TouchableOpacity,
   TextInput,
   Modal,
+  FlatList,
 } from "react-native";
 
 import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 
 import { Feather } from "@expo/vector-icons";
-
 import { api } from "../../services/api";
 import { ModalPicker } from "../../components/ModalPicker";
+import { ListItem } from "../../components/ListItem";
 
 type RouteDetailParams = {
   Order: {
@@ -33,6 +33,13 @@ type ProductProps = {
   name: string;
 };
 
+type ItemProps = {
+  id: string;
+  product_id: string;
+  name: string;
+  amount: string | number;
+};
+
 type OrderRouteProps = RouteProp<RouteDetailParams, "Order">;
 
 export default function Order() {
@@ -46,12 +53,13 @@ export default function Order() {
   const [modalCategoryVisible, setModalCategoryVisible] = useState(false);
 
   const [products, setProducts] = useState<ProductProps[] | []>([]);
-  const [produtSelected, setProdutSelected] = useState<
+  const [productSelected, setProductSelected] = useState<
     ProductProps | undefined
   >();
   const [modalProductVisible, setModalProductVisible] = useState(false);
 
   const [amount, setAmount] = useState("1");
+  const [items, setItems] = useState<ItemProps[]>([]);
 
   useEffect(() => {
     async function loadInfo() {
@@ -73,7 +81,7 @@ export default function Order() {
       });
 
       setProducts(response.data);
-      setProdutSelected(response.data[0]);
+      setProductSelected(response.data[0]);
     }
 
     loadProducts();
@@ -90,7 +98,6 @@ export default function Order() {
       navigation.goBack();
     } catch (err) {
       console.log(err);
-      alert("Erro ao apagar o pedido, tente novamente!");
     }
   }
 
@@ -99,19 +106,52 @@ export default function Order() {
   }
 
   function handleChangeProduct(item: ProductProps) {
-    setProdutSelected(item);
+    setProductSelected(item);
+  }
+
+  // adcionando um produto nessa mesa
+  async function handleAdd() {
+    const response = await api.post("/order/add", {
+      order_id: route.params?.order_id,
+      product_id: productSelected?.id,
+      amount: Number(amount),
+    });
+
+    let data = {
+      id: response.data.id,
+      product_id: productSelected?.id as string,
+      name: productSelected?.name as string,
+      amount: amount,
+    };
+
+    setItems((oldArray) => [...oldArray, data]);
+  }
+
+  async function handleDeleteItem(item_id: string) {
+    await api.delete("/order/remove", {
+      params: {
+        item_id: item_id,
+      },
+    });
+
+    let removeItem = items.filter((item) => {
+      return item.id !== item_id;
+    });
+
+    setItems(removeItem);
   }
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Mesa {route.params.number}</Text>
-        <TouchableOpacity onPress={handleCloseOrder}>
-          <Feather name="trash-2" size={30} color={"#FF3F4B"} />
-        </TouchableOpacity>
+        {items.length === 0 && (
+          <TouchableOpacity onPress={handleCloseOrder}>
+            <Feather name="trash-2" size={28} color="#FF3F4b" />
+          </TouchableOpacity>
+        )}
       </View>
-      {/* Category */}
+
       {category.length !== 0 && (
         <TouchableOpacity
           style={styles.input}
@@ -121,19 +161,17 @@ export default function Order() {
         </TouchableOpacity>
       )}
 
-      {/* Sub-Category */}
       {products.length !== 0 && (
         <TouchableOpacity
           style={styles.input}
           onPress={() => setModalProductVisible(true)}
         >
-          <Text style={{ color: "#FFF" }}>{produtSelected?.name}</Text>
+          <Text style={{ color: "#FFF" }}>{productSelected?.name}</Text>
         </TouchableOpacity>
       )}
 
-      {/* Quantity */}
       <View style={styles.qtdContainer}>
-        <Text style={styles.qtdText}>Qauntidade:</Text>
+        <Text style={styles.qtdText}>Quantidade</Text>
         <TextInput
           style={[styles.input, { width: "60%", textAlign: "center" }]}
           placeholderTextColor="#F0F0F0"
@@ -142,18 +180,30 @@ export default function Order() {
           onChangeText={setAmount}
         />
       </View>
-      {/* Buttons */}
+
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.buttonAdd}>
+        <TouchableOpacity style={styles.buttonAdd} onPress={handleAdd}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={[styles.button, { opacity: items.length === 0 ? 0.3 : 1 }]}
+          disabled={items.length === 0}
+        >
           <Text style={styles.buttonText}>Avançar</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Modal */}
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, marginTop: 24 }}
+        data={items}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ListItem data={item} deleteItem={handleDeleteItem} />
+        )}
+      />
+
       <Modal
         transparent={true}
         visible={modalCategoryVisible}
@@ -184,7 +234,7 @@ export default function Order() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1D1D2E",
+    backgroundColor: "#1d1d2e",
     paddingVertical: "5%",
     paddingEnd: "4%",
     paddingStart: "4%",
@@ -198,8 +248,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "#FFFFFF",
-    marginRight: 10,
+    color: "#FFF",
+    marginRight: 14,
   },
   input: {
     backgroundColor: "#101026",
@@ -214,7 +264,7 @@ const styles = StyleSheet.create({
   },
   qtdContainer: {
     flexDirection: "row",
-    alignContent: "center",
+    alignItems: "center",
     justifyContent: "space-between",
   },
   qtdText: {
@@ -229,7 +279,7 @@ const styles = StyleSheet.create({
   },
   buttonAdd: {
     width: "20%",
-    backgroundColor: "#3FD1FF",
+    backgroundColor: "#3fd1ff",
     borderRadius: 4,
     height: 40,
     justifyContent: "center",
@@ -237,11 +287,11 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#101026",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
   },
   button: {
-    backgroundColor: "#3FFFA3",
+    backgroundColor: "#3fffa3",
     borderRadius: 4,
     height: 40,
     width: "75%",
